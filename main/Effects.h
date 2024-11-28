@@ -1,7 +1,7 @@
 #ifndef Effects_H
 #define Effects_H
-#include "Dados.cpp"
-#include "FFT.cpp"
+#include "Dados.h"
+#include "FFT.h"
 
 class Effects{
     Dados audio;
