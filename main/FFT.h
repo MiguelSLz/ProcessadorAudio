@@ -8,7 +8,7 @@ class FFT{
 public:
 
     /*
-        Ideias e sugestoes:
+        -Leo: Ideias e sugestoes
 
         Vc entende melhor como a FFT funciona exatamente, mas poderiamos ter funcoes tipo: 
         getFrequency();
