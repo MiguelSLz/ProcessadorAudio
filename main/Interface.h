@@ -5,12 +5,13 @@
 
 
 class Interface{
-  int state;
+  short int state;
+  short int entradaUsuario;
   
 public:
   Interface();
-  int getState();
-  void setState(int state);
+  short int getState();
+  void setState(short int state);
 
   void runLcdUI();
 };
