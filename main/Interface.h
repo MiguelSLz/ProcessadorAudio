@@ -11,7 +11,10 @@ class Interface{
 public:
   Interface();
   short int getState();
-  void setState(short int state);
+  short int getEntrada();
+
+  void setState(short int newState);
+  void setEntrada(short int newEntrada);
 
   void runLcdUI();
 };
