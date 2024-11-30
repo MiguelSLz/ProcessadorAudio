@@ -14,22 +14,23 @@ void Dados::setupADC(){
 	adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_12);
 }
 
-void Dados::LerMic(){
-	unsigned int NumAmostras=0;
+void Dados::lerMic(){
+	unsigned int numAmostras=0;
+	bool exit = false;
 	// escolha do while true com o break ao inves do for foi para apenas contar o numero de amostras quando for lido uma amostra (acontece a cada 125ms)
-	while(true){ // NumAmostras indo ate 65536 porque eh igual a 2^16, resultando na potencia de 2 mais proxima que resulte em 8 segundos de audio
+	while(!exit){ // NumAmostras indo ate 65536 porque eh igual a 2^16, resultando na potencia de 2 mais proxima que resulte em 8 segundos de audio
 			
 		if(Interruptor.getTimerFlag()){ // verdade a cada 0,125 ms
 				
 			float amostra = adc1_get_raw(ADC1_CHANNEL_4);
-			Sinal[NumAmostras] = amostra;
+			sinal[NumAmostras] = amostra;
 				
 			Interruptor.clearTimerFlag();
-			NumAmostras++;
+			numAmostras++;
 		}
 		
-		if (NumAmostras == 65536){
-			break; // sai do loop quando foram lidas 65536 amostras
+		if (numAmostras == 65536){
+			exit = true; // sai do loop quando foram lidas 65536 amostras
 		}
 	}
 }
