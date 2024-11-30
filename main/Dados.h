@@ -5,10 +5,10 @@
 #include "Interrupts.h"
 
 class Dados{
-	float *Sinal;
+	float *sinal;
 public:
 	void setupADC();
-	void LerMic(); 
+	void lerMic(); 
 };
 
 #endif // Dados_H
