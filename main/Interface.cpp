@@ -1,18 +1,49 @@
 #include "Interface.h"
+#include<stdlib.h>
+
+#define FREQBASE 125
 
 // Variaveis globais
 unsigned char contadorBotao = 1;
+bool flagInterrupt = false;
+
+// Funcoes
+
 
 // Definicao de metodos da classe Interface
 Interface::Interface(){
   state = 0;
-  entradaUsuario = 0;
+  botaoOK = 0;
 }
 
 unsigned char Interface::getState(){ return state; }
 void Interface::setState(unsigned char newState){ state = newState; }
-unsigned char Interface::entradaUsuario{ return entradaUsuario; }
-void Interface::setEntrada(unsigned char newEntrada){ entradaUsuario = newEntrada; }
+bool Interface::getOK{ return botaoOK; }
+void Interface::setOK(bool valor){ botaoOK = valor; }
+void Interface::montaContador(char str[], unsigned char contador){
+	unsigned char tamanho = 0, i = 0;
+	char[1] a;
+	
+	// descobre quantos caracteres a string tem
+	while(str[tamanho] != '\0'){
+			tamanho++;
+	}
+	
+	// adiciona espacos 'a string
+	for(i = 0; i < (16 - tamanho); i++){
+		str[tamanho+i] = ' ';
+	}
+
+	//traduz o numero contador para um caractere
+	sprintf(a, "%d", contador);
+	
+	// adiciona o contador ao ultimo espaco do LCD e coloca o caratere nulo de volta no novo final da string
+	str[15] = char(numero);
+	str[16] = '\0';
+}
+void Interface::montaBarra(char barraEq[], unsigned char valor, char volume){
+	
+}
 
 
 // Metodo mais importante de Interface
@@ -23,9 +54,9 @@ void Interface::setEntrada(unsigned char newEntrada){ entradaUsuario = newEntrad
 		
 		state = 0
 		primeiro menu da Interface, pergunta se o usuario quer:
-		entradaUsuario = 1 - Nenhum efeito
-		entradaUsuario = 2 - Eco
-		entradaUsuario = 3 - Equalizacao
+		escolhaEfeito = 1 - Nenhum efeito
+		escolhaEfeito = 2 - Eco
+		escolhaEfeito = 3 - Equalizacao
 		
 		state = 1
 		"Gravando..."
@@ -42,83 +73,103 @@ void Interface::setEntrada(unsigned char newEntrada){ entradaUsuario = newEntrad
 	*/
 	
 	/*
-		-Leo: PQ OS IFS E OS WHILES?
-		
 		Os ifs tao mostrando a mensagem uma vez, enquanto os whiles tao rodando um loop que espera
-		algum interrupt mudar o valor de entradaUsuario zerar
+		algum interrupt mudar o valor de botaoOK para verdadeiro
 	*/
+
+
 void Interface::runLcdUI(){
+	// variavel a ser manipulada para adicionar
+	char str[17], barraEq[17], volumeEq[6];
+	
+	
 	//LCD_inicializa_4_bits(char rs, char en, char d4, char d5, char d6, char d7);
 	LCD_inicializa_4_bits(27, 28, 0, 1, 2, 3);
 	
 	while(true){
+
+
 		if(state == 0){
-			LCD_escreve_strings("1-Sem efeitos", "2-Eco 3-Eq.");
+			str = "Selecione:";
+			montaContador(str, contadorBotao);
+			LCD_escreve_strings(str, "1-N. 2-Eco 3-Eq.");
 		}
 		while(state == 0){
-			switch(entradaUsuario){
-				default:
-				// n faz nada, while reseta e fica esperando
-				// e assim, espera entrada de botao digital com interrupt
-				break;
+			if(flagInterrupt){
+
+				str = "2-Eco 3-Eq.";
+				montaContador(str, contadorBotao);
+				LCD_escreve_strings("1-Sem efeitos", str);
 				
-				case 1:
-				//(pula para gravacao)
-				state = 1;
-				// flagEfeito = 1;
-				break;
-				
-				case 2:
-				state = 2; //(mostrar opcoes de forca do Eco)
-				break;
-				
-				case 3:
-				state = 3; //(mostrar opcoes de Equalizacao)
-				break;
-			}//end switch()
+				if(botaoOK){
+					state = contadorBotao;
+					escolhaEfeito = contadorBotao;
+				}
+			}//end if
 		}//end while(0)
 		
-		setEntrada(0);
+
+
 		if(state == 1){
 			LCD_escreve_strings("Gravando...", "");
-			//funcao_que_grava_audio();
+			//metodoEfeito(escolhaEfeito, forcaEfeito);
 		}
 		
-		setEntrada(0);
+
+
 		if(state == 2){
-			// envia msg que mostra opcoes do menu 2
+			str = "Forca do eco:";
+			montaContador(str, contadorBotao);
+			LCD_escreve_strings(str, "1 2 3; 0-Voltar");
 		}
 		while(state == 2){
-			switch(entradaUsuario){
-				default:
-				break;
-				case 1:
-				state = 1;
-				// flagEfeito = 0;
-				break;
-			}//end switch()
+			if(flagInterrupt){
+
+				str = "1 2 3";
+				montaContador(str, contadorBotao);
+				LCD_escreve_strings("Forca do eco:", str);
+
+				if(botaoOK){
+					state = 1;
+					// forcaEfeito = contadorBotao;
+				}
+
+			}//end if
 		}//end while(2)
 		
-		setEntrada(0);
+
+
 		if(state == 3){
-			// envia msg que mostra opcoes do menu 3
+			str = "";
+			sprintf(str, "%dHz", FREQ_BASE*1);
+			montaContador(str, contadorBotao);
+
+			barraEq = "       /       ";
+			LCD_escreve_strings(str,);
 		}
 		while(state == 3){
-			switch(entradaUsuario){
-				default:
-				break;
-			}//end switch()
+			if(flagInterrupt){
+
+				str = "1 2 3";
+				montaContador(str, contadorBotao);
+				LCD_escreve_strings("Forca do eco:", str);
+
+				if(botaoOK){
+					state = 1;
+					// forcaEfeito = contadorBotao;
+				}
+			}
 		}//end while(3)
 		
-		setEntrada(0);
+
+
 		if(state == 4){
 			// envia msg que mostra opcoes do menu 4
 		}
 		while(state == 4){
-			switch(entradaUsuario){
-				default:
-				break;
-			}//end switch()
+			if(flagInterrupt){
+
+			}//end if
 		}//end while(4)
 	} //end while(true)
 } //end runLcdUI()
