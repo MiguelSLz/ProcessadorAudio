@@ -6,16 +6,16 @@
 
 
 class Interface{
-  short int state;
-  short int entradaUsuario;
+  unsigned char state;
+  unsigned char entradaUsuario;
   
 public:
   Interface();
-  short int getState();
-  short int getEntrada();
+  unsigned char getState();
+  unsigned char getEntrada();
 
-  void setState(short int newState);
-  void setEntrada(short int newEntrada);
+  void setState(unsigned char newState);
+  void setEntrada(unsigned char newEntrada);
 
   void runLcdUI();
 };
