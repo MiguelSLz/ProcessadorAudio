@@ -1,15 +1,21 @@
 #include "Interface.h"
 
-Interface::Interface(){ 
+// Variaveis globais
+unsigned char contadorBotao = 1;
+
+// Definicao de metodos da classe Interface
+Interface::Interface(){
   state = 0;
   entradaUsuario = 0;
 }
 
-short int Interface::getState(){ return state; }
-void Interface::setState(short int newState){ state = newState; }
-short int Interface::entradaUsuario{ return entradaUsuario; }
-void Interface::setEntrada(short int newEntrada){ entradaUsuario = newEntrada; }
+unsigned char Interface::getState(){ return state; }
+void Interface::setState(unsigned char newState){ state = newState; }
+unsigned char Interface::entradaUsuario{ return entradaUsuario; }
+void Interface::setEntrada(unsigned char newEntrada){ entradaUsuario = newEntrada; }
 
+
+// Metodo mais importante de Interface
 	/* 
 		-Leo: O QUE E O STATE?
 		
@@ -57,32 +63,26 @@ void Interface::runLcdUI(){
 				break;
 				
 				case 1:
-				// state = 1 (pula para gravacao)
-				// executa gravacao sem efeitos
+				//(pula para gravacao)
+				state = 1;
+				// flagEfeito = 1;
 				break;
 				
 				case 2:
-				// state = 2 (mostrar opcoes de forca do Eco)
-				// executa gravacao e aplica Eco
+				state = 2; //(mostrar opcoes de forca do Eco)
 				break;
 				
 				case 3:
-				// state = 3 (mostrar opcoes de Equalizacao)
-				// executa gravacao e aplica Eq.
+				state = 3; //(mostrar opcoes de Equalizacao)
 				break;
 			}//end switch()
 		}//end while(0)
 		
 		setEntrada(0);
 		if(state == 1){
-			// envia msg que mostra msg de gravacao do menu 1
+			LCD_escreve_strings("Gravando...", "");
+			//funcao_que_grava_audio();
 		}
-		while(state == 1){
-			switch(entradaUsuario){
-				default:
-				break;
-			}//end switch()
-		}//end while(1)
 		
 		setEntrada(0);
 		if(state == 2){
@@ -91,6 +91,10 @@ void Interface::runLcdUI(){
 		while(state == 2){
 			switch(entradaUsuario){
 				default:
+				break;
+				case 1:
+				state = 1;
+				// flagEfeito = 0;
 				break;
 			}//end switch()
 		}//end while(2)
