@@ -7,16 +7,18 @@
 
 class Interface{
   unsigned char state;
-  unsigned char entradaUsuario;
+  bool botaoOK;
   
 public:
   Interface();
   unsigned char getState();
-  unsigned char getEntrada();
+  bool getOK();
 
   void setState(unsigned char newState);
-  void setEntrada(unsigned char newEntrada);
+  bool setOK(bool valor);
 
+  void montaContador(char str[], unsigned char contador);
+  void montaBarra(char barraEq[], unsigned char valor, char volume);
   void runLcdUI();
 };
 
