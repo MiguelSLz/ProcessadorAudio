@@ -2,6 +2,7 @@
 #define INTERFACE_H
 #include "FFT.cpp"
 #include "Dados.cpp"
+#include "LCD_display.cpp"
 
 
 class Interface{
