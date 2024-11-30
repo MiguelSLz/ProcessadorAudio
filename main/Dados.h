@@ -5,10 +5,9 @@
 #include "Interrupts.h"
 
 class Dados{
-	int *SinalIN;
-	int *SinalOUT;
+	float *Sinal;
 public:
-    int LerMic(); 
+    void LerMic(); 
 };
 
 #endif // Dados_H
