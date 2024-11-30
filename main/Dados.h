@@ -7,7 +7,8 @@
 class Dados{
 	float *Sinal;
 public:
-    void LerMic(); 
+	void setupADC();
+	void LerMic(); 
 };
 
 #endif // Dados_H
