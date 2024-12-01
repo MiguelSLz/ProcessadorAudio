@@ -6,20 +6,21 @@
 
 
 class Interface{
-  unsigned char state;
-  bool botaoOK;
-  
+	bool botaoEsq, botaoDir, botaoOK;
+
 public:
-  Interface();
-  unsigned char getState();
-  bool getOK();
-
-  void setState(unsigned char newState);
-  bool setOK(bool valor);
-
-  void montaContador(char str[], unsigned char contador);
-  void montaBarra(char barraEq[], unsigned char valor, char volume);
-  void runLcdUI();
+	Interface();
+	bool getEsq();
+	bool getDir();
+	bool getOK();
+	
+	bool setEsq(bool valor);
+	bool setDir(bool valor);
+	bool setOK(bool valor);
+	
+	void montaContador(char str[], unsigned char contador);
+	void montaBarra(char barraEq[], char volume);
+	void runLcdUI();
 };
 
 #endif
