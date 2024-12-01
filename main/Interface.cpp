@@ -93,7 +93,10 @@ void Interface::montaBarra(char barraEq[], char volume){
 		Menu que configura as frequencias da equalizacao
 		
 		state = 4
-		da opcao de dar play e replay e de voltar ao comeco do programa (apagando dados anteriores)
+		da opcao de dar play e replay e de voltar ao comeco do programa
+
+  		state = 5
+    		"Reproduzindo..."
 	*/
 	
 	/*
@@ -401,7 +404,7 @@ void Interface::runLcdUI(){
 
 		// ===== TELA DE REPRODUCAO =====
 		if(state == 5){
-			LCD_escreve_strings("Tocando...", "");
+			LCD_escreve_strings("Reproduzindo...", "");
 			//metodoTocaAudio();
 		}//end if 5
 
