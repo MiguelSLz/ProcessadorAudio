@@ -34,3 +34,7 @@ void Dados::lerMic(){
 		}
 	}
 }
+
+float Dados::getsinal(){
+	return *sinal;
+}

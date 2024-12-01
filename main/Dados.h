@@ -9,6 +9,7 @@ class Dados{
 public:
 	void setupADC();
 	void lerMic(); 
+	float getsinal();
 };
 
 #endif // Dados_H
