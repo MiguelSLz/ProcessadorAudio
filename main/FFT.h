@@ -7,11 +7,11 @@
 class FFT{
 
 public:
-    FFT();
-    void ExecuteFFT(float *Sinal);
-    void FasorFFT(float *Sinal);
-    void QuadraticaFFT(float *Sinal);
-    void iFFT(float *Sinal);
+	FFT();
+	void executeFFT(float *sinal);
+	void fasorFFT(float *sinal);
+	void retangularFFT(float *sinal);
+	void iFFT(float *sinal);
 };
 
 #endif // FFT_H
