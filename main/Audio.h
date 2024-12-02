@@ -2,6 +2,7 @@
 #define Audio_H
 #include "Dados.cpp"
 #include "FFT.cpp"
+#include "LCD_display.cpp"
 
 class Audio{
     Dados data;
