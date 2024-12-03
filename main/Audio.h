@@ -10,7 +10,8 @@ class Audio{
 public:
     void gravar(unsigned char escolha, char forca, char volume[]);
     void aplicarEco(char forca);
-    void aplicarEq(char volume[]);
+    void aplicarEqualizacaoLinear(char volume[]);
+    void aplicarEqualizacaoGaussiana(char volume[]);
     void reproduzirAudio();
 };
 
