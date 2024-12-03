@@ -107,7 +107,7 @@ void Interface::montaBarra(char barraEq[], char volume){
 
 void Interface::runLcdUI(){
 	// variavel a ser manipulada para adicionar
-	unsigned char state = 0, menuPage = 1, escolhaEfeito = 1;
+	unsigned char state = 0, menuPage = 1, escolhaEfeito = 1, forcaEco = 1;
 	char str[17], barraEq[17], volumeEq[7] = {0, 0, 0, 0, 0, 0};
 	unsigned char multiploFreqBase[7] = {1, 2, 4, 8, 16, 32, 64};
 	bool volumeSelect = false;
@@ -173,7 +173,7 @@ void Interface::runLcdUI(){
 		// ===== TELA DE GRAVACAO =====
 		if(state == 1){
 			LCD_escreve_strings("Gravando...", "");
-			//metodoEfeito(escolhaEfeito, forcaEfeito);
+			gravacao.gravar(escolhaEfeito, forcaEco, volumeEq);
 		}//end if 1
 		
 
@@ -204,8 +204,15 @@ void Interface::runLcdUI(){
 						}
 					}
 					else{
-						state = menuPage;
-						escolhaEfeito = menuPage;
+						if(menuPage == 0){
+							state = 0;
+						}
+						else{
+							state = 1;
+							escolhaEfeito = 2;
+							forcaEco = menuPage;
+						}
+						
 					}
 
 				// mostra o menu de acordo com a pagina
@@ -405,7 +412,7 @@ void Interface::runLcdUI(){
 		// ===== TELA DE REPRODUCAO =====
 		if(state == 5){
 			LCD_escreve_strings("Reproduzindo...", "");
-			//metodoTocaAudio();
+			gravacao.reproduzirAudio();
 		}//end if 5
 
 
