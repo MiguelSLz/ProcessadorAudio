@@ -159,8 +159,6 @@ void Audio::aplicarEqualizacaoLinear(char[] volume){
 	frequencia.executeFFT(sinal);
 	frequencia.fasorFFT(sinal);
 
-	
-
 	for(unsigned short int i = 0; i < NUM_AMOSTRAS / 2; i++){
 		
 		for(unsigned short int j = 0; j < 7; j++){
@@ -185,7 +183,6 @@ void Audio::aplicarEqualizacaoLinear(char[] volume){
 
 		modeloLinear = 0;
 	}
-
 }
 
 void Audio::aplicarEqualizacaoGaussiana(char[] volume){
@@ -197,8 +194,6 @@ void Audio::aplicarEqualizacaoGaussiana(char[] volume){
 
 	frequencia.executeFFT(sinal);
 	frequencia.fasorFFT(sinal);
-
-	
 
 	for(unsigned short int i = 0; i < NUM_AMOSTRAS / 2; i++){
 		
