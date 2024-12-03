@@ -1,12 +1,14 @@
-#ifndef INTERFACE_H
-#define INTERFACE_H
+#ifndef Interface_H
+#define Interface_H
 #include "FFT.cpp"
 #include "Dados.cpp"
+#include "Audio.cpp"
 #include "LCD_display.cpp"
 
 
 class Interface{
 	bool botaoEsq, botaoDir, botaoOK;
+	Audio gravacao;
 
 public:
 	Interface();
