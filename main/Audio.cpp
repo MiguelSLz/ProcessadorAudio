@@ -22,12 +22,12 @@ void Audio::gravar(unsigned char escolha, char forca, char volume[]){
 
 		// ECO
 		case 2:
-			aplicarEco();
+			aplicarEco(forca);
 		break;
 
 		// EQUALIZACAO
 		case 3:
-			aplicarEqualizacaoGaussiana();
+			aplicarEqualizacaoGaussiana(volume);
 		break;
 	}
 }
