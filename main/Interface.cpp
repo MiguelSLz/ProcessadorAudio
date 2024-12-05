@@ -1,5 +1,5 @@
 #include "Interface.h"
-#include<stdio.h>
+#include <stdio.h>
 
 #define FREQ_BASE 50
 
@@ -10,9 +10,9 @@ Interface::Interface(){
   botaoOK = false;
 }
 
-bool Interface::getEsq{ return botaoEsq; }
-bool Interface::getDir{ return botaoDir; }
-bool Interface::getOK{ return botaoOK; }
+bool Interface::getEsq(){ return botaoEsq; }
+bool Interface::getDir(){ return botaoDir; }
+bool Interface::getOK(){ return botaoOK; }
 
 void Interface::setEsq(bool valor){ botaoEsq = valor; }
 void Interface::setDir(bool valor){ botaoDir = valor; }

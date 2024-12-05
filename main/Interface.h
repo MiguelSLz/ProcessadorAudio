@@ -13,9 +13,9 @@ public:
 	bool getDir();
 	bool getOK();
 	
-	bool setEsq(bool valor);
-	bool setDir(bool valor);
-	bool setOK(bool valor);
+	void setEsq(bool valor);
+	void setDir(bool valor);
+	void setOK(bool valor);
 	
 	void montaContador(char str[], unsigned char contador);
 	void montaBarra(char barraEq[], char volume);

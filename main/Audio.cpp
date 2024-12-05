@@ -1,6 +1,7 @@
 // Audio.cpp
 #include "Audio.h"
-#include<math.h>
+#include "LCD_display.h"
+#include <math.h>
 
 #define FREQ_BASE 50
 #define NUM_AMOSTRAS 65536
@@ -149,7 +150,7 @@ void Audio::aplicarEco(char forca){ // Volume representa a intensidade do eco
 	para decidir detalhes de parametros dessas funcoes, o Geogebra foi utilizado para modelar algumas situacoes
 */
 
-void Audio::aplicarEqualizacaoLinear(char[] volume){
+void Audio::aplicarEqualizacaoLinear(char volume[]){
 	unsigned short int indexFftFreq[7] = {410, 819, 1638, 3277, 6554, 13107, 26214};
 	float *sinal;
 	float modeloLinear = 0;
@@ -185,7 +186,7 @@ void Audio::aplicarEqualizacaoLinear(char[] volume){
 	}
 }
 
-void Audio::aplicarEqualizacaoGaussiana(char[] volume){
+void Audio::aplicarEqualizacaoGaussiana(char volume[]){
 	unsigned short int indexFftFreq[7] = {410, 819, 1638, 3277, 6554, 13107, 26214};
 	float *sinal;
 	float modeloGaussiano = 0, expoente = 0;
