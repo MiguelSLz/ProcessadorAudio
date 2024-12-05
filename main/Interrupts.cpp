@@ -58,6 +58,11 @@ void Interrupts::clearTimerFlag() {
 	timer_flag = false;
 }
 
+// Declaracao dos interrupts (definicao em main.cpp)
+static void botaoEsqInterrupt(void* arg);
+static void botaoDirInterrupt(void* arg);
+static void botaoOKInterrupt(void* arg);
+
 void Interrupts::configInterruptExt(){
 	gpio_config_t io_conf; // A estrutura e’ utilizada para definir a variavel io_conf
 	io_conf.intr_type = GPIO_INTR_POSEDGE; // Interrupcao na borda de subida
@@ -74,7 +79,4 @@ void Interrupts::configInterruptExt(){
 	gpio_isr_handler_add(7, botaoOKInterrupt, NULL);
 }
 
-// Declaracao dos interrupts (definicao em main.cpp)
-static void botaoEsqInterrupt(void* arg);
-static void botaoDirInterrupt(void* arg);
-static void botaoOKInterrupt(void* arg);
+
