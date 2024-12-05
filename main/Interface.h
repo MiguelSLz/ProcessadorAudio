@@ -1,7 +1,6 @@
 #ifndef Interface_H
 #define Interface_H
 #include "Audio.cpp"
-#include "LCD_display.cpp"
 
 
 class Interface{
