@@ -53,18 +53,15 @@ void Interface::montaBarra(char barraEq[], char volume){
 
 	barraEq[13] = '/';
 
-	switch(volume < 0){
-		case true:
+	if(volume < 0){
 		sprintf(numChar, "%d", -volume);
 		barraEq[14] = '-';
 		barraEq[15] = numChar[0];
-		break;
-		
-		case false:
+	}
+	else{
 		sprintf(numChar, "%d", volume);
 		barraEq[14] = '+';
 		barraEq[15] = numChar[0];
-		break;
 	}
 	barraEq[16] = '\0';
 }
@@ -253,10 +250,30 @@ void Interface::runLcdUI(){
 			if(botaoEsq || botaoDir || botaoOK){
 				
 				// tratamento dos botoes com respeito ao volume estar selecionado ou nao e as condicoes atuais de pagina e volume
-				switch(volumeSelect){
-					
-					// EDICAO DE VOLUME NAO SELECIONADA
-					case false:
+				// EDICAO DE VOLUME SELECIONADA
+				if(volumeSelect){
+					if(botaoEsq){
+						if(volumeEq[menuPage - 1] <= -6){
+							volumeEq[menuPage - 1] = -6;
+						}
+						else{
+							volumeEq[menuPage - 1]--;
+						}
+					}
+					else if(botaoDir){
+						if(volumeEq[menuPage - 1] >= 6){
+							volumeEq[menuPage - 1] = 6;
+						}
+						else{
+							volumeEq[menuPage - 1]++;
+						}
+					}
+					else{
+						volumeSelect = false;
+					}
+				}//end if volumeSelect
+				// EDICAO DE VOLUME NAO SELECIONADA
+				else{
 					if(botaoEsq){
 						if(menuPage <= 0){
 							menuPage = 0;
@@ -285,34 +302,7 @@ void Interface::runLcdUI(){
 							volumeSelect = true;
 						}
 					}
-					break;
-
-
-					// EDICAO DE VOLUME SELECIONADA
-					case true:
-					if(botaoEsq){
-						if(volumeEq[menuPage - 1] <= -6){
-							volumeEq[menuPage - 1] = -6;
-						}
-						else{
-							volumeEq[menuPage - 1]--;
-						}
-					}
-					else if(botaoDir){
-						if(volumeEq[menuPage - 1] >= 6){
-							volumeEq[menuPage - 1] = 6;
-						}
-						else{
-							volumeEq[menuPage - 1]++;
-						}
-					}
-					else{
-						volumeSelect = false;
-					}
-					break;
-
-
-				}//end switch(volumeSelect)
+				}//end else
 
 				// mostra o menu correspondente 'a pagina atual
 				if(menupage <= 0){
