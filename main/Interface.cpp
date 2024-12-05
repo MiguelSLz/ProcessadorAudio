@@ -107,18 +107,19 @@ void Interface::montaBarra(char barraEq[], char volume){
 
 void Interface::runLcdUI(){
 	// variavel a ser manipulada para adicionar
+	Interrupts interruptExt;
 	unsigned char state = 0, menuPage = 1, escolhaEfeito = 1, forcaEco = 1;
 	char str[17], barraEq[17], volumeEq[7] = {0, 0, 0, 0, 0, 0};
 	unsigned char multiploFreqBase[7] = {1, 2, 4, 8, 16, 32, 64};
 	bool volumeSelect = false;
-	
+
+	// Configura interrupt dos botoes (definicao de interrupts no main)
+	interruptExt.configInterruptExt();
 	
 	//LCD_inicializa_4_bits(char rs, char en, char d4, char d5, char d6, char d7);
 	LCD_inicializa_4_bits(27, 28, 0, 1, 2, 3);
 	
 	while(true){
-
-
 
 		// ===== MENU ESCOLHA =====
 		if(state == 0){
