@@ -20,18 +20,12 @@ void Dados::lerMic(){
 	// escolha do while ao inves do for foi para apenas contar o numero de amostras quando for lido uma amostra (acontece a cada 125ms)
 	while(i < NUM_AMOSTRAS){ // i indo ate 65536 porque eh igual a 2^16, resultando na potencia de 2 mais proxima que resulte em 8 segundos de audio
 			
-		switch(Interruptor.getTimerFlag()){ // verdade a cada 0,125 ms
-			case true:	
+		if(Interruptor.getTimerFlag()){ // verdade a cada 0,125 ms	
 			amostra = adc1_get_raw(ADC1_CHANNEL_4);
 			audioData[i] = amostra;
 				
 			Interruptor.clearTimerFlag();
 			i++;
-			break;
-
-			// nao faz nada caso o timer nao dispare
-			case false:
-			break;
 		}
 		
 	}
