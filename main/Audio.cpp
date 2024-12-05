@@ -219,5 +219,5 @@ void Audio::reproduzirAudio(){
 
 	sinal = data.getSinal();
 
-	// configurar I2C aqui
+	// usar DAC
 }
