@@ -2,6 +2,7 @@
 #ifndef Interrupts_H
 #define Interrupts_H
 
+#include "driver/gpio.h"
 #include "driver/gptimer.h"
 #include "esp_attr.h"
 
