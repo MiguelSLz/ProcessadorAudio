@@ -70,7 +70,7 @@ void Interrupts::configInterruptExt(){
 	gpio_config(&io_conf);
 	
 	gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
-	gpio_isr_handler_add(5, botaoLeftInterrupt, NULL);
-	gpio_isr_handler_add(6, botaoRightInterrupt, NULL);
+	gpio_isr_handler_add(5, botaoEsqInterrupt, NULL);
+	gpio_isr_handler_add(6, botaoDirInterrupt, NULL);
 	gpio_isr_handler_add(7, botaoOKInterrupt, NULL);
 }
