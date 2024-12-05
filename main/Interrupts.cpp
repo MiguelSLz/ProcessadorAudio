@@ -1,6 +1,5 @@
 // Interrupts.cpp
 #include "Interrupts.h"
-#include "Interface.cpp"
 
 // Inicializa o ponteiro da instância
 Interrupts *Interrupts::instance = nullptr;
