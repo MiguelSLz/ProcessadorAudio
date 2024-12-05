@@ -1,223 +1,81 @@
-// Audio.cpp
-#include "Audio.h"
-#include "LCD_display.h"
-#include <math.h>
+// Interrupts.cpp
+#include "Interrupts.h"
 
-#define FREQ_BASE 50
-#define NUM_AMOSTRAS 65536
-#define ATTENUATION1 0.35
-#define ATTENUATION2 0.5
-#define ATTENUATION3 0.65
+// Inicializa o ponteiro da instância
+Interrupts *Interrupts::instance = nullptr;
 
-void Audio::gravar(unsigned char escolha, char forca, char volume[]){
-	
-	data.lerMic();
+// Construtor
+Interrupts::Interrupts() {
+	instance = this; // Define a instância ativa da classe
+}
 
-	LCD_escreve_strings("Processando...", "");
-
-	switch(escolha){
-		// SEM EFEITOS
-		case 1:
-			// nada
-		break;
-
-		// ECO
-		case 2:
-			aplicarEco(forca);
-		break;
-
-		// EQUALIZACAO
-		case 3:
-			aplicarEqualizacaoGaussiana(volume);
-		break;
+// Função estática de callback
+bool IRAM_ATTR Interrupts::timer_callback(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx) {
+	if (instance) {
+	instance->timer_flag = true; // Sinaliza o evento de alarme
 	}
+	return true; // Solicita a reinicialização automática do alarme
 }
+
+// Configuração do Timer
+void Interrupts::configTimer() {
+	gptimer_handle_t temporizador = NULL;
 	
-void Audio::aplicarEco(char forca){ // Volume representa a intensidade do eco
-	int i;
-	float *sinal;
-
-	sinal = data.getSinal();
-
-	switch (forca) {
-		
-		case 1:
-			for(int i=4000; i< NUM_AMOSTRAS; i++){ // a contagem comeca em 4000 (0.5s) para ter tempo de comecar o eco
-				sinal[i] = sinal[i] + ATTENUATION2 * sinal[i - 4000];
-			}
-			break;
-			
-		case 2: // Como ha' mais de um eco foi necessario percorrer o vetor de tras para frente
-			for(i=NUM_AMOSTRAS - 1 ; i >= 4000; i--){ // 0.25s -> 0.5s ( 1 eco)
-				
-				sinal[i] += ATTENUATION2 * sinal[i - 2000];
-                
-                if (i >= 4000) {					// 0.5s -> fim do audio ( 2 ecos )
-                    sinal[i] += ATTENUATION1 * sinal[i - 4000];
-                }
-                
-			}
-			break;
-		case 3: // 3 ecos
-			for (int i = NUM_AMOSTRAS - 1; i >= 6000; i--) { // 0.25s, 0.5s e 0.75s de atraso
-                sinal[i] += ATTENUATION3 * sinal[i - 2000];
-                sinal[i] += ATTENUATION2 * sinal[i - 4000];
-                sinal[i] += ATTENUATION1 * sinal[i - 6000];
-            }
-            for (int i = 5999; i >= 4000; i--) { // Apenas 2 ecos
-                sinal[i] += ATTENUATION3 * sinal[i - 2000];
-                sinal[i] += ATTENUATION2 * sinal[i - 4000];
-            }
-            for (int i = 3999; i >= 2000; i--) { // Apenas 1 eco
-                sinal[i] += ATTENUATION3 * sinal[i - 2000];
-            }
-            break;
-		default: // caso 2
-			for(i=NUM_AMOSTRAS -1 ; i >= 4000; i--){ // 0.25s -> 0.5s ( 1 eco)
-				
-				sinal[i] += ATTENUATION2 * sinal[i - 2000];
-                
-                if (i >= 4000) {					// 0.5s -> fim do audio ( 2 ecos )
-                    sinal[i] += ATTENUATION1 * sinal[i - 4000];
-                }
-                
-			}
-	}
+	// Configuração do temporizador
+	gptimer_config_t config_temporizador = {
+		.clk_src = GPTIMER_CLK_SRC_APB,    // Fonte de clock APB
+		.direction = GPTIMER_COUNT_UP,     // Contagem crescente
+		.resolution_hz = 1 * 1000000,      // Resolução de 1 MHz (1 tick = 1 us)
+	};
+	ESP_ERROR_CHECK(gptimer_new_timer(&config_temporizador, &temporizador));
 	
+	// Configuração do alarme
+	gptimer_alarm_config_t alarm_config = {
+		.alarm_count = 125,                   // 125 µs = 125 ticks
+		.reload_count = 0,                    // Começa a contar do zero
+		.flags.auto_reload_on_alarm = true,   // Reinicia automaticamente após o alarme
+	};
+	ESP_ERROR_CHECK(gptimer_set_alarm_action(temporizador, &alarm_config));
+
+    // Registro do callback
+	gptimer_event_callbacks_t config_callback = {
+		.on_alarm = Interrupts::timer_callback, // Callback estático
+    };
+	ESP_ERROR_CHECK(gptimer_register_event_callbacks(temporizador, &config_callback, NULL));
+
+    // Habilita e inicia o temporizador
+	ESP_ERROR_CHECK(gptimer_enable(temporizador));
+	ESP_ERROR_CHECK(gptimer_start(temporizador));
 }
 
-/*
-	volume[]
-	Index	Freq
-	0		50Hz
-	1		100Hz
-	2		200Hz
-	3		400Hz
-	4		800Hz
-	5		1600Hz
-	6		3200Hz
+// Obter o valor da flag
+bool Interrupts::getTimerFlag() {
+	return timer_flag;
+}
 
-	sinal[] (fft processada)
-	Index		Freq
-	0			0Hz
-	1			~0,12Hz
-	2			~0,24Hz
-	...
-	410			~50Hz
-	819			~100Hz
-	1638		~200Hz
-	3277		~400Hz
-	6554		~800Hz
-	13107		~1600Hz
-	26214		~3200Hz
-	...
-	65535		8000Hz
+// Limpar a flag
+void Interrupts::clearTimerFlag() {
+	timer_flag = false;
+}
 
-	sera necessaria uma conversao que onde:
-	entrada		saida
-	0			410
-	1			819
-	2			1638
-	3			3277
-	4			6554
-	5			13107
-	6			26214
-*/
+// Declaracao dos interrupts (definicao em main.cpp)
+static void botaoEsqInterrupt(void* arg);
+static void botaoDirInterrupt(void* arg);
+static void botaoOKInterrupt(void* arg);
 
-/*
-	tambem e' necessaria uma funcao matematica que aumente ou diminua o valor apenas ao redor da frequencia
-	desejada com uma queda exponencial ao redor...
-
-	digamos que queremos que algo no estilo:
+void Interrupts::configInterruptExt(){
+	gpio_config_t io_conf; // A estrutura e’ utilizada para definir a variavel io_conf
+	io_conf.intr_type = GPIO_INTR_POSEDGE; // Interrupcao na borda de subida
+	io_conf.pin_bit_mask = (1ULL << 5) | (1ULL << 6) | (1ULL << 7); // Mascara para GPIO 5, 6 e 7
+	io_conf.mode = GPIO_MODE_INPUT; // Configura a porta como entrada
+	io_conf.pull_down_en = GPIO_PULLDOWN_ENABLE; // Habilita o pull-down
+	io_conf.pull_up_en = GPIO_PULLUP_DISABLE; // Desabilita o pull-up
 	
-	Volume
-		^
-	+3|           
-	+2|          /\
-	+1|         /  \ 
-	+0|________/    \_________
-	-1|
-	-2|
-	-3|----------|------------> Freq.(f)
-	//   Freq. desejada (F)
+	gpio_config(&io_conf);
 	
-	A curva do equalizador poderia ser modelada por duas linhas retas que iniciam e acabam em algum valor
-	proporcional à F, como começar em 0.5*F e terminar em 1.5*F
-
-	Alternativamente, podemos modelar usando a seguinte funcao baseada na curva gaussiana: 
-	volume * e^(-(f - F)^2/((0.35 * F)^2))
-
-	para decidir detalhes de parametros dessas funcoes, o Geogebra foi utilizado para modelar algumas situacoes
-*/
-
-void Audio::aplicarEqualizacaoLinear(char volume[]){
-	unsigned short int indexFftFreq[7] = {410, 819, 1638, 3277, 6554, 13107, 26214};
-	float *sinal;
-	float modeloLinear = 0;
-
-	sinal = data.getSinal();
-
-	frequencia.executeFFT(sinal);
-	frequencia.fasorFFT(sinal);
-
-	for(unsigned short int i = 0; i < NUM_AMOSTRAS / 2; i++){
-		
-		for(unsigned short int j = 0; j < 7; j++){
-			// parametros escolhidos atraves de modelagem no Geogebra
-			if((i > 0.5*indexFftFreq[j]) && (i <= indexFftFreq[j])){
-				modeloLinear += (volume[j] * (i - 0.5*indexFftFreq[j])) / (0.5*indexFftFreq[j]);
-				
-				// acumula-se aditivamente a influencia de cada faixa de frequencia
-				modeloLinear += modeloLinear;
-			}
-			else if ((i > indexFftFreq[j]) && (i < 1.5*indexFftFreq[j])){
-				modeloLinear += -(volume[j] * (i - 1.5*indexFftFreq[j])) / (0.5*indexFftFreq[j]);
-				
-				// acumula-se aditivamente a influencia de cada faixa de frequencia
-				modeloLinear += modeloLinear;
-			}
-		}
-		// aplicando um fato de correcao ao modelo para que ele nao abaixe ou aumente demais o volume
-		modeloLinear = (modeloLinear / 10) + 1;
-
-		sinal[2*i] = modeloLinear * sinal[2*i];
-
-		modeloLinear = 0;
-	}
+	gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
+	gpio_isr_handler_add(5, botaoEsqInterrupt, NULL);
+	gpio_isr_handler_add(6, botaoDirInterrupt, NULL);
+	gpio_isr_handler_add(7, botaoOKInterrupt, NULL);
 }
 
-void Audio::aplicarEqualizacaoGaussiana(char volume[]){
-	unsigned short int indexFftFreq[7] = {410, 819, 1638, 3277, 6554, 13107, 26214};
-	float *sinal;
-	float modeloGaussiano = 0, expoente = 0;
-
-	sinal = data.getSinal();
-
-	frequencia.executeFFT(sinal);
-	frequencia.fasorFFT(sinal);
-
-	for(unsigned short int i = 0; i < NUM_AMOSTRAS / 2; i++){
-		
-		for(unsigned short int j = 0; j < 7; j++){
-			// parametros escolhidos atraves de modelagem no Geogebra
-			expoente = -(pow(i - indexFftFreq[j], 2)) / (pow(0.35 * indexFftFreq[j], 2));
-			
-			// acumula-se aditivamente a influencia de cada faixa de frequencia
-			modeloGaussiano += volume[j] * exp(expoente);
-		}
-		// aplicando um fato de correcao ao modelo para que ele nao abaixe ou aumente demais o volume
-		modeloGaussiano = (modeloGaussiano / 10) + 1;
-
-		sinal[2*i] = modeloGaussiano * sinal[2*i];
-
-		modeloGaussiano = 0;
-	}
-}
-
-void Audio::reproduzirAudio(){
-	float *sinal;
-
-	sinal = data.getSinal();
-
-	// usar DAC
-}

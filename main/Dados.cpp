@@ -32,5 +32,5 @@ void Dados::lerMic(){
 }
 
 float* Dados::getSinal(){
-	return *enderecoSinal;
+	return enderecoSinal;
 }
