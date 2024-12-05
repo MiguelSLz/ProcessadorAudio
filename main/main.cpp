@@ -1,3 +1,4 @@
+#include "Interface.cpp"
 
 Interface LCD;
 extern "C" {
