@@ -1,7 +1,5 @@
 #ifndef Interface_H
 #define Interface_H
-#include "FFT.cpp"
-#include "Dados.cpp"
 #include "Audio.cpp"
 #include "LCD_display.cpp"
 
