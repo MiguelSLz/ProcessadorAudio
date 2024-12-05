@@ -73,3 +73,8 @@ void Interrupts::configInterruptExt(){
 	gpio_isr_handler_add(6, botaoDirInterrupt, NULL);
 	gpio_isr_handler_add(7, botaoOKInterrupt, NULL);
 }
+
+// Declaracao dos interrupts (definicao em main.cpp)
+static void botaoEsqInterrupt(void* arg);
+static void botaoDirInterrupt(void* arg);
+static void botaoOKInterrupt(void* arg);
