@@ -114,7 +114,7 @@ void Interface::runLcdUI(){
 	interruptExt.configInterruptExt();
 	
 	//LCD_inicializa_4_bits(char rs, char en, char d4, char d5, char d6, char d7);
-	LCD_inicializa_4_bits(27, 28, 0, 1, 2, 3);
+	LCD_inicializa_4_bits(20, 21, 0, 1, 2, 3);
 	
 	while(true){
 
