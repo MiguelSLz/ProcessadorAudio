@@ -1,24 +1,34 @@
 #include "Interface.h"
+#include "LCD_display.h"
 #include <stdio.h>
 
 #define FREQ_BASE 50
+#define DELAY_MS 20
+
+static void delay(int ms){
+  for(volatile int i = 0; (i < ms*1000); i++);
+}
 
 // Definicao de metodos da classe Interface
 Interface::Interface(){
   botaoEsq = false;
   botaoDir = false;
   botaoOK = false;
+  counter = 10;
+  LCD_inicializa_4_bits(20, 21, 0, 1, 2, 3);
 }
 
 bool Interface::getEsq(){ return botaoEsq; }
 bool Interface::getDir(){ return botaoDir; }
 bool Interface::getOK(){ return botaoOK; }
+long unsigned int Interface::getCounter(){ return counter; }
 
 void Interface::setEsq(bool valor){ botaoEsq = valor; }
 void Interface::setDir(bool valor){ botaoDir = valor; }
 void Interface::setOK(bool valor){ botaoOK = valor; }
+void Interface::setCounter(long unsigned int valor){ counter = valor; }
 
-void Interface::montaBarra(char barraEq[], char volume){
+void Interface::montaBarra(char barraEq[], signed char volume){
 	char numChar[4];
 	
 	for(signed char i = 0; i < 13; i++){
@@ -104,18 +114,13 @@ void Interface::montaBarra(char barraEq[], char volume){
 
 void Interface::runLcdUI(){
 	// variavel a ser manipulada para adicionar
-	Interrupts interruptExt;
 	unsigned char state = 0, menuPage = 1, escolhaEfeito = 1, forcaEco = 1;
 	char str[17], barraEq[17];
 	signed char volumeEq[7] = {0, 0, 0, 0, 0, 0};
 	unsigned char multiploFreqBase[7] = {1, 2, 4, 8, 16, 32, 64};
 	bool volumeSelect = false;
-
-	// Configura interrupt dos botoes (definicao de interrupts no main)
-	interruptExt.configInterruptExt();
 	
 	//LCD_inicializa_4_bits(char rs, char en, char d4, char d5, char d6, char d7);
-	LCD_inicializa_4_bits(27, 28, 0, 1, 2, 3);
 	
 	while(true){
 
@@ -135,6 +140,7 @@ void Interface::runLcdUI(){
 						else{
 							menuPage--;
 						}
+						botaoEsq = false;
 					}
 					else if(botaoDir){
 						if(menuPage >= 3){
@@ -143,11 +149,14 @@ void Interface::runLcdUI(){
 						else{
 							menuPage++;
 						}
+						botaoDir = false;
 					}
 					else{
 						state = menuPage;
 						escolhaEfeito = menuPage;
+						botaoOK = false;
 					}
+					
 
 				// mostra o menu de acordo com a pagina
 				switch(menuPage){
@@ -165,14 +174,16 @@ void Interface::runLcdUI(){
 				}
 
 			}//end if botaoEsq || botaoDir || botaoOK
+			counter++;
+			delay(DELAY_MS);
 		}//end while(0)
 		
 
 
 		// ===== TELA DE GRAVACAO =====
 		if(state == 1){
-			LCD_escreve_strings((char*)"Gravando...", (char*)"");
-			gravacao.gravar(escolhaEfeito, forcaEco, volumeEq);
+			LCD_escreve_strings((char*)"Gravando...", (char*)" ");
+			//gravacao.gravar(escolhaEfeito, forcaEco, volumeEq);
 		}//end if 1
 		
 
@@ -193,6 +204,7 @@ void Interface::runLcdUI(){
 						else{
 							menuPage--;
 						}
+						botaoEsq = false;
 					}
 					else if(botaoDir){
 						if(menuPage >= 3){
@@ -201,6 +213,7 @@ void Interface::runLcdUI(){
 						else{
 							menuPage++;
 						}
+						botaoDir = false;
 					}
 					else{
 						if(menuPage == 0){
@@ -211,8 +224,10 @@ void Interface::runLcdUI(){
 							escolhaEfeito = 2;
 							forcaEco = menuPage;
 						}
+						botaoOK = false;
 						
 					}
+					
 
 				// mostra o menu de acordo com a pagina
 				switch(menuPage){
@@ -234,6 +249,8 @@ void Interface::runLcdUI(){
 				}
 
 			}//end if
+			counter++;
+			delay(DELAY_MS);
 		}//end while(2)
 		
 
@@ -260,6 +277,7 @@ void Interface::runLcdUI(){
 						else{
 							volumeEq[menuPage - 1]--;
 						}
+						botaoEsq = false;
 					}
 					else if(botaoDir){
 						if(volumeEq[menuPage - 1] >= 6){
@@ -268,9 +286,11 @@ void Interface::runLcdUI(){
 						else{
 							volumeEq[menuPage - 1]++;
 						}
+						botaoDir = false;
 					}
 					else{
 						volumeSelect = false;
+						botaoOK = false;
 					}
 				}//end if volumeSelect
 				// EDICAO DE VOLUME NAO SELECIONADA
@@ -282,26 +302,29 @@ void Interface::runLcdUI(){
 						else{
 							menuPage--;
 						}
+						botaoEsq = false;
 					}
 					else if(botaoDir){
-						if(menuPage >= 7){
-							menuPage = 7;
+						if(menuPage > 7){
+							menuPage = 8;
 						}
 						else{
 							menuPage++;
 						}
+						botaoDir = false;
 					}
 					else{
 						if(menuPage <= 0){
 							state = 0;
 						}
-						else if(menuPage >= 7){
+						else if(menuPage > 7){
 							state = 1;
 							escolhaEfeito = 3;
 						}
 						else{
 							volumeSelect = true;
 						}
+						botaoOK = false;
 					}
 				}//end else
 
@@ -312,11 +335,11 @@ void Interface::runLcdUI(){
 
 				}//end if menuPage <= 0
 
-				else if(menuPage >= 7){
+				else if(menuPage > 7){
 
 					LCD_escreve_strings((char*)"Pressione OK", (char*)"para gravar");
 
-				}//end elseif menuPage >= 7
+				}//end elseif menuPage > 7
 
 				else if(!volumeSelect){
 					
@@ -336,6 +359,8 @@ void Interface::runLcdUI(){
 				}//end elseif volumeSelect
 
 			}//end if botaoEsq || botaoDir || botaoOK
+			counter++;
+			delay(DELAY_MS);
 		}//end while(3)
 		
 
@@ -356,6 +381,7 @@ void Interface::runLcdUI(){
 						else{
 							menuPage--;
 						}
+						botaoEsq = false;
 					}
 					else if(botaoDir){
 						if(menuPage >= 3){
@@ -364,6 +390,7 @@ void Interface::runLcdUI(){
 						else{
 							menuPage++;
 						}
+						botaoDir = false;
 					}
 					else{
 						switch(menuPage){
@@ -378,7 +405,8 @@ void Interface::runLcdUI(){
 							case 3:
 								state = 1;
 							break;
-						}	
+						}
+						botaoOK = false;
 					}
 
 				// mostra o menu de acordo com a pagina
@@ -398,15 +426,18 @@ void Interface::runLcdUI(){
 				}
 
 			}//end if
+			counter++;
+			delay(DELAY_MS);
 		}//end while(4)
 
 
 		// ===== TELA DE REPRODUCAO =====
 		if(state == 5){
 			LCD_escreve_strings((char*)"Reproduzindo...", (char*)"");
-			gravacao.reproduzirAudio();
+			//gravacao.reproduzirAudio();
 		}//end if 5
 
+		
 
 	} //end while(true)
 } //end runLcdUI()

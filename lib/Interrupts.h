@@ -18,7 +18,6 @@ public:
 	void configTimer();
 	bool getTimerFlag();
 	void clearTimerFlag();
-	void configInterruptExt();
 };
 
 #endif // Interrupts_H

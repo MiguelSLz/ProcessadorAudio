@@ -5,20 +5,22 @@
 
 class Interface{
 	bool botaoEsq, botaoDir, botaoOK;
-	Audio gravacao;
+	long unsigned int counter;
+	//Audio gravacao;
 
 public:
 	Interface();
 	bool getEsq();
 	bool getDir();
 	bool getOK();
+	long unsigned int getCounter();
 	
 	void setEsq(bool valor);
 	void setDir(bool valor);
 	void setOK(bool valor);
-	
-	void montaContador(char str[], unsigned char contador);
-	void montaBarra(char barraEq[], char volume);
+	void setCounter(long unsigned int valor);
+
+	void montaBarra(char barraEq[], signed char volume);
 	void runLcdUI();
 };
 

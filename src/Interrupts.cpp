@@ -23,9 +23,10 @@ void Interrupts::configTimer() {
 	
 	// Configuração do temporizador
 	gptimer_config_t config_temporizador = {
-		.clk_src = GPTIMER_CLK_SRC_APB,    // Fonte de clock APB
-		.direction = GPTIMER_COUNT_UP,     // Contagem crescente
-		.resolution_hz = 1 * 1000000,      // Resolução de 1 MHz (1 tick = 1 us)
+		.clk_src = GPTIMER_CLK_SRC_APB,		// Fonte de clock APB
+		.direction = GPTIMER_COUNT_UP,		// Contagem crescente
+		.resolution_hz = 1 * 1000000,		// Resolução de 1 MHz (1 tick = 1 us)
+		.intr_priority = 4,					// Nivel de prioridade
 	};
 	ESP_ERROR_CHECK(gptimer_new_timer(&config_temporizador, &temporizador));
 	
@@ -56,27 +57,6 @@ bool Interrupts::getTimerFlag() {
 // Limpar a flag
 void Interrupts::clearTimerFlag() {
 	timer_flag = false;
-}
-
-// Declaracao dos interrupts (definicao em main.cpp)
-static void botaoEsqInterrupt(void* arg);
-static void botaoDirInterrupt(void* arg);
-static void botaoOKInterrupt(void* arg);
-
-void Interrupts::configInterruptExt(){
-	gpio_config_t io_conf; // A estrutura e’ utilizada para definir a variavel io_conf
-	io_conf.intr_type = GPIO_INTR_POSEDGE; // Interrupcao na borda de subida
-	io_conf.pin_bit_mask = (1ULL << 5) | (1ULL << 6) | (1ULL << 7); // Mascara para GPIO 5, 6 e 7
-	io_conf.mode = GPIO_MODE_INPUT; // Configura a porta como entrada
-	io_conf.pull_down_en = GPIO_PULLDOWN_ENABLE; // Habilita o pull-down
-	io_conf.pull_up_en = GPIO_PULLUP_DISABLE; // Desabilita o pull-up
-	
-	gpio_config(&io_conf);
-	
-	gpio_install_isr_service(ESP_INTR_FLAG_IRAM);
-	gpio_isr_handler_add(GPIO_NUM_5, botaoEsqInterrupt, NULL);
-	gpio_isr_handler_add(GPIO_NUM_6, botaoDirInterrupt, NULL);
-	gpio_isr_handler_add(GPIO_NUM_7, botaoOKInterrupt, NULL);
 }
 
 
