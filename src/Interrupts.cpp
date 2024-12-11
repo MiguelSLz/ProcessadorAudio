@@ -1,7 +1,7 @@
 // Interrupts.cpp
 #include "Interrupts.h"
 
-#define OVERSAMPLING 4
+#define OVERSAMPLING 8
 
 // Inicializa o ponteiro da instância
 Interrupts *Interrupts::instance = nullptr;

@@ -5,13 +5,13 @@
 
 #define FREQ_BASE 50
 #define NUM_AMOSTRAS 65536
-#define ATTENUATION1 0.35
-#define ATTENUATION2 0.5
-#define ATTENUATION3 0.65
+#define ATTENUATION1 0.2
+#define ATTENUATION2 0.3
+#define ATTENUATION3 0.5
 
 void Audio::gravar(unsigned char escolha, char forca, signed char volume[]){
 	
-	data.lerReproduzir();
+	data.lerMic();
 
 	LCD_escreve_strings((char*)"Processando...", (char*)"");
 

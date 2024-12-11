@@ -7,7 +7,7 @@
 #include <math.h>
 //NUM_AMOSTRAS = 65536 = 2^16 para poder ser processado na fft e considerando a taxa de amostragem utilizada, ter 8 segundos de audio
 #define NUM_AMOSTRAS 65536
-#define OVERSAMPLING_COUNTER 3
+#define OVERSAMPLING_COUNTER 7
 
 #define GPIO_ENABLE_REG 0x60004020
 #define GPIO_OUT_W1TS_REG 0x60004008
@@ -39,7 +39,7 @@ void Dados::lerMic(){
 	// escolha do while ao inves do for foi para apenas contar o numero de amostras quando for lido uma amostra (acontece a cada 125ms)
 	while(i < NUM_AMOSTRAS){ // i indo ate 65536 porque eh igual a 2^16, resultando na potencia de 2 mais proxima que resulte em 8 segundos de audio
 
-		if(Interruptor.getTimerFlag()){ // verdade a cada 31,25 us
+		if(Interruptor.getTimerFlag()){ // verdade a cada 15,625 us
 			counter++;
 			Interruptor.clearTimerFlag();
 			if(counter >= OVERSAMPLING_COUNTER){
@@ -69,7 +69,7 @@ void Dados::criarPDM(){
 	// escolha do while ao inves do for foi para apenas contar o numero de amostras quando for lido uma amostra (acontece a cada 125ms)
 	while(i < NUM_AMOSTRAS){ // i indo ate 65536 porque eh igual a 2^16, resultando na potencia de 2 mais proxima que resulte em 8 segundos de audio
 
-		if(Interruptor.getTimerFlag()){ // verdade a cada 31,25 us
+		if(Interruptor.getTimerFlag()){ // verdade a cada 15,625 us
 			Interruptor.clearTimerFlag();
 			counter++;
 			integrator += (int)audioData[i] - feedback;
@@ -82,7 +82,7 @@ void Dados::criarPDM(){
 				feedback = 0;
 				*saidaPDM.OUT_W1TC = (1 << 10);
 			}
-			if(counter >= OVERSAMPLING_COUNTER){
+			if(counter >= 2.2 * OVERSAMPLING_COUNTER){
 				counter = 0;
 				i++;
 			}
@@ -114,12 +114,12 @@ void Dados::lerReproduzir(){
 	// escolha do while ao inves do for foi para apenas contar o numero de amostras quando for lido uma amostra (acontece a cada 125ms)
 	while(i < NUM_AMOSTRAS){ // i indo ate 65536 porque eh igual a 2^16, resultando na potencia de 2 mais proxima que resulte em 8 segundos de audio
 
-		if(Interruptor.getTimerFlag()){ // verdade a cada 31,25 us
+		if(Interruptor.getTimerFlag()){ // verdade a cada 15,625 us
 			Interruptor.clearTimerFlag();
 			counter++;
 			integrator += (int)audioData[i - 1] - feedback;
 			
-			if(integrator >= 2200){
+			if(integrator >= 2048){
 				feedback = 4095;
 				*saidaPDM.OUT_W1TS = (1 << 10);
 			}
