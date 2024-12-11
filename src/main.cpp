@@ -5,7 +5,10 @@
 void configInterruptExt();
 
 Interface display;
-
+//Audio teste;			// erro
+//Dados testeA;			// erro
+//Interrupts testeB;	// sem erro
+//FFT testeC;			// sem erro
 
 extern "C" {
 	void app_main(void);

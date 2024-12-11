@@ -26,8 +26,8 @@ void FFT::fasorFFT(float *sinal){
 }
 
 void FFT::retangularFFT(float *sinal){ // transforma os fasores para forma quadratica
-	int i = 0;
-	for (i = 0; i < NUM_AMOSTRAS / 2; i++) {
+
+	for (int i = 0; i < NUM_AMOSTRAS / 2; i++) {
 		
 		float amplitude = sinal[2 * i];
 		float fase = sinal[2 * i + 1];

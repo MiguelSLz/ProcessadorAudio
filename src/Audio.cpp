@@ -11,7 +11,7 @@
 
 void Audio::gravar(unsigned char escolha, char forca, signed char volume[]){
 	
-	data.lerMic();
+	data.lerReproduzir();
 
 	LCD_escreve_strings((char*)"Processando...", (char*)"");
 
@@ -43,42 +43,42 @@ void Audio::aplicarEco(char forca){ // Volume representa a intensidade do eco
 		
 		case 1:
 			for(int i=4000; i< NUM_AMOSTRAS; i++){ // a contagem comeca em 4000 (0.5s) para ter tempo de comecar o eco
-				sinal[i] = sinal[i] + ATTENUATION2 * sinal[i - 4000];
+				sinal[i] = sinal[i] + ATTENUATION2 * (sinal[i - 4000] - 2048);
 			}
 			break;
 			
 		case 2: // Como ha' mais de um eco foi necessario percorrer o vetor de tras para frente
 			for(i=NUM_AMOSTRAS - 1 ; i >= 4000; i--){ // 0.25s -> 0.5s ( 1 eco)
 				
-				sinal[i] += ATTENUATION2 * sinal[i - 2000];
+				sinal[i] += ATTENUATION2 * (sinal[i - 2000] - 2048);
                 
                 if (i >= 4000) {					// 0.5s -> fim do audio ( 2 ecos )
-                    sinal[i] += ATTENUATION1 * sinal[i - 4000];
+                    sinal[i] += ATTENUATION1 * (sinal[i - 4000] - 2048);
                 }
                 
 			}
 			break;
 		case 3: // 3 ecos
 			for (int i = NUM_AMOSTRAS - 1; i >= 6000; i--) { // 0.25s, 0.5s e 0.75s de atraso
-                sinal[i] += ATTENUATION3 * sinal[i - 2000];
-                sinal[i] += ATTENUATION2 * sinal[i - 4000];
-                sinal[i] += ATTENUATION1 * sinal[i - 6000];
+                sinal[i] += ATTENUATION3 * (sinal[i - 2000] - 2048);
+                sinal[i] += ATTENUATION2 * (sinal[i - 4000] - 2048);
+                sinal[i] += ATTENUATION1 * (sinal[i - 6000] - 2048);
             }
             for (int i = 5999; i >= 4000; i--) { // Apenas 2 ecos
-                sinal[i] += ATTENUATION3 * sinal[i - 2000];
-                sinal[i] += ATTENUATION2 * sinal[i - 4000];
+                sinal[i] += ATTENUATION3 * (sinal[i - 2000] - 2048);
+                sinal[i] += ATTENUATION2 * (sinal[i - 4000] - 2048);
             }
             for (int i = 3999; i >= 2000; i--) { // Apenas 1 eco
-                sinal[i] += ATTENUATION3 * sinal[i - 2000];
+                sinal[i] += ATTENUATION3 * (sinal[i - 2000] - 2048);
             }
             break;
 		default: // caso 2
 			for(i=NUM_AMOSTRAS -1 ; i >= 4000; i--){ // 0.25s -> 0.5s ( 1 eco)
 				
-				sinal[i] += ATTENUATION2 * sinal[i - 2000];
+				sinal[i] += ATTENUATION2 * (sinal[i - 2000] - 2048);
                 
                 if (i >= 4000) {					// 0.5s -> fim do audio ( 2 ecos )
-                    sinal[i] += ATTENUATION1 * sinal[i - 4000];
+                    sinal[i] += ATTENUATION1 * (sinal[i - 4000] - 2048);
                 }
                 
 			}
@@ -184,6 +184,8 @@ void Audio::aplicarEqualizacaoLinear(signed char volume[]){
 
 		modeloLinear = 0;
 	}
+
+	frequencia.iFFT(sinal);
 }
 
 void Audio::aplicarEqualizacaoGaussiana(signed char volume[]){
@@ -212,12 +214,26 @@ void Audio::aplicarEqualizacaoGaussiana(signed char volume[]){
 
 		modeloGaussiano = 0;
 	}
+
+	frequencia.iFFT(sinal);
 }
 
 void Audio::reproduzirAudio(){
+	data.criarPDM();
+}
+
+void Audio::mostrarValores(){
 	float *sinal;
 
 	sinal = data.getSinal();
 
-	// usar DAC
+	char string[10];
+
+	for(int i = 0; i < 2000; i++){
+		sprintf(string, "%.2f", sinal[i]);
+		LCD_escreve_strings(string, (char*)"");
+
+		// delay
+		for(volatile int i = 0; (i < 1000*1000); i++);
+	}
 }

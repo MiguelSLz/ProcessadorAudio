@@ -183,7 +183,8 @@ void Interface::runLcdUI(){
 		// ===== TELA DE GRAVACAO =====
 		if(state == 1){
 			LCD_escreve_strings((char*)"Gravando...", (char*)" ");
-			//gravacao.gravar(escolhaEfeito, forcaEco, volumeEq);
+			gravacao.gravar(escolhaEfeito, forcaEco, volumeEq);
+			state = 4;
 		}//end if 1
 		
 
@@ -368,7 +369,7 @@ void Interface::runLcdUI(){
 		// ===== MENU PLAY/REPLAY =====
 		if(state == 4){
 			menuPage = 1;
-			LCD_escreve_strings((char*)"Pressione OK", (char*)"para voltar");
+			LCD_escreve_strings((char*)"1. Reproduzir", (char*)"audio");
 		}
 		while(state == 4){
 			if(botaoEsq || botaoDir || botaoOK){
@@ -421,7 +422,7 @@ void Interface::runLcdUI(){
 					break;
 
 					case 3:
-					LCD_escreve_strings((char*)"2. Regravar com", (char*)"mesmo efeito");
+					LCD_escreve_strings((char*)"3. Regravar com", (char*)"mesmo efeito");
 					break;
 				}
 
@@ -434,7 +435,9 @@ void Interface::runLcdUI(){
 		// ===== TELA DE REPRODUCAO =====
 		if(state == 5){
 			LCD_escreve_strings((char*)"Reproduzindo...", (char*)"");
-			//gravacao.reproduzirAudio();
+			gravacao.reproduzirAudio();
+			//gravacao.mostrarValores();
+			state = 4;
 		}//end if 5
 
 		

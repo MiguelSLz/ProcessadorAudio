@@ -6,16 +6,18 @@
 #include "driver/gptimer.h"
 #include "esp_attr.h"
 
-class Interrupts {
+class Interrupts{
 	
-	volatile bool timer_flag = false; // Flag para sinalizar a interrupcao
-	static Interrupts *instance;     // Ponteiro para a instancia da classe
+	volatile bool timer_flag = false;		// Flag para sinalizar a interrupcao
+	static Interrupts *instance;			// Ponteiro para a instancia da classe
+	gptimer_handle_t temporizador;	// Handle do temporizador
 	
 	static bool IRAM_ATTR timer_callback(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx);
 
 public:
 	Interrupts();  // Construtor
 	void configTimer();
+	void stopTimer();
 	bool getTimerFlag();
 	void clearTimerFlag();
 };

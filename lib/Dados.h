@@ -5,14 +5,25 @@
 
 #include "Interrupts.h"
 
+struct RegsGPIO
+{
+    unsigned long int *ENABLE;
+    unsigned long int *OUT_W1TS;
+    unsigned long int *OUT_W1TC;
+};
+
 class Dados{
 	float audioData[NUM_AMOSTRAS];
 	float *enderecoSinal;
 	Interrupts Interruptor;
+	RegsGPIO saidaPDM;
 public:
 	Dados();
-	void lerMic(); 
+	void IRAM_ATTR lerMic(); 
 	float* getSinal();
+
+	void IRAM_ATTR criarPDM();
+	void IRAM_ATTR lerReproduzir();
 };
 
 #endif // Dados_H

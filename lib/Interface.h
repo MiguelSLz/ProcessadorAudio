@@ -6,7 +6,7 @@
 class Interface{
 	bool botaoEsq, botaoDir, botaoOK;
 	long unsigned int counter;
-	//Audio gravacao;
+	Audio gravacao;
 
 public:
 	Interface();

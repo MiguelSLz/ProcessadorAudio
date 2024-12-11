@@ -13,6 +13,7 @@ public:
     void aplicarEqualizacaoLinear(signed char volume[]);
     void aplicarEqualizacaoGaussiana(signed char volume[]);
     void reproduzirAudio();
+    void mostrarValores();
 };
 
 #endif // Audio_H
